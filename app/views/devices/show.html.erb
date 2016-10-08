@@ -1,0 +1,334 @@
+<link rel="stylesheet" type="text/css" href="//cdn.jsdelivr.net/bootstrap/latest/css/bootstrap.css" />
+
+
+<%= javascript_tag do %>
+  temperature_data = <%= temperature_data.html_safe %>;
+  device = <%= current_device.html_safe %>;
+  var x_data = [], y_data =[], x_data_2 =[], y_data_2=[]; 
+    for (var i = 0; i < temperature_data.length ; i += 1) {
+        //console.log(temperature_data[i]['date']);
+            x_data.push(new Date(temperature_data[i]['date']));
+            y_data.push(temperature_data[i]['temp']);
+    }
+<% end %>  
+<script>
+</script>
+        <div class="flex">
+
+            <header>
+             <div class="title">
+                 Intlosol
+             </div>
+            </header>
+            
+            <div class="middle">
+                 <div class="map-data">
+                    <div class='map'>
+                        <div id="map"></div>
+                    </div>
+                    <div class='location'>
+                        <p class="device_name">
+                            
+                        </p>
+                        <p class="device-address">
+                            
+                        </p>
+                    </div>
+                 </div>
+                 <div class="graph-data">
+                    <div class="device-stats">
+                        <div class="stats-label">
+                            <p class="celcius-text">Celcius</p>
+                        </div>
+                        <div class="max-temp-box">
+                            <p class="max-temp-text">Max Temp</p>
+                            <p class="max-temp-value">28</p>
+                        </div>
+                        <div class="min-temp-box">
+                            <p class="min-temp-text">Min Temp</p>
+                            <p class="min-temp-value">17</p>
+                        </div>
+                        <div class="mean-temp-box">
+                            <p class="mean-temp-text">Mean Temp</p>
+                            <p class="mean-temp-value">21</p>
+                        </div>
+                        <div class="current-temp-box">
+                            <p class="current-temp-text">Current Temp</p>
+                            <p class="current-temp-value">18</p>
+                        </div>
+                    </div>
+                    <div class="graph-filter">
+                        <label class="zoom">Zoom</label>
+                        <input class="zoom-button" id="oneM-button" type="button" value="1M"/>
+                        <input class="zoom-button" id="threeM-button" type="button" value="3M"/>
+                        <input class="zoom-button" id="sixM-button" type="button" value="6M"/>
+                        <input class="zoom-button" id="oneY-button" type="button" value="1Y"/>
+                        <input class="zoom-button" id="All-button" type="button" value="ALL"/>
+                        <input class="datefilter" type="text" name="daterange" value="01/09/2016 - 09/09/2016" />
+                    </div>
+                    <div class="graph">
+                        <div id="chart"></div>
+                    </div>
+                 </div>
+                 <div class="recent-data">
+                    <div class="customer-credentials">
+                        <img class="customer-logo" src="/itc-logo.jpg" alt="itc logo" />
+                    </div>
+                    <div class="data-list">
+                      <label class="recent-records">Recent records</label>
+                      <table align="center">
+                          <thead>
+                            <tr>
+                              <th>Temp</th>
+                              <th>Date</th>
+                            </tr>
+                          </thead>
+
+                          <tbody>
+                              <tr>
+                                <td>24</td>
+                                <td>1 minute ago</td>
+                              </tr>
+                              <tr>
+                                <td>22</td>
+                                <td>16 minutes ago</td>
+                              </tr>
+                              <tr>
+                                <td>21</td>
+                                <td>32 minutes ago</td>
+                              </tr>
+                              <tr>
+                                <td>21</td>
+                                <td>32 minutes ago</td>
+                              </tr>
+                              <tr>
+                                <td>21</td>
+                                <td>32 minutes ago</td>
+                              </tr>
+                              <tr>
+                                <td>21</td>
+                                <td>32 minutes ago</td>
+                              </tr>
+                              <tr>
+                                <td>21</td>
+                                <td>32 minutes ago</td>
+                              </tr>
+                              <tr>
+                                <td>21</td>
+                                <td>32 minutes ago</td>
+                              </tr>
+                              <tr>
+                                <td>21</td>
+                                <td>32 minutes ago</td>
+                              </tr>
+                              <tr>
+                                <td>21</td>
+                                <td>32 minutes ago</td>
+                              </tr>
+                          </tbody>
+                         </table>  
+                    </div>
+                 </div>
+            </div>
+            
+            <footer>
+             <p>Intlosol LTD, 2016</p>
+            </footer>
+        
+        </div>  
+<script>
+window.onload = function () {
+  x_data.unshift("x");
+  y_data.unshift("temp");
+  var chart = c3.generate({
+                    padding: {
+                        top: 20,
+                        right: 50,
+                        bottom: 20,
+                        left: 50,
+                    },
+                    data: {
+                        x: 'x',
+                        columns: [x_data, y_data],
+                        type: 'line'
+                    },
+                    color: {
+                        pattern: ['black']
+                    },
+                    axis: {
+                        x: {
+                            label: "date",
+                            type: 'timeseries',
+                            tick: {
+                                count: 4,
+                                format: '%Y-%m-%d %H:%M:%S'
+                            }
+                        },
+                        y: {
+                            label: "temperature"
+                        }
+                    },
+                    zoom: {
+                        enabled: true
+                    },
+                    subchart: {
+                        show: true
+                    }
+            });
+   // x_data_2.unshift('x'); 
+   // y_data_2.unshift("temp");
+   /* jQuery('.map').on( "click", function(e){
+        console.log("coming inside!!!!")
+        chart.x(x_data_2);
+        chart.load({
+            columns: [ y_data_2 ],
+            unload: ['temp']
+        });
+    }); */
+     
+     jQuery('.zoom-button').on('click',function(){
+        var self = this;
+         $.ajax({
+                    url: '/devices/get_data',
+                    type: "GET",
+                    dataType: "json",
+                    data: { "range": self.value , 
+                            "device_id": device.id
+                          },
+                   
+                    success: function (outcome){
+                       console.log(outcome);
+                       loadData(outcome);
+
+                    },
+                    
+                    error: function(data){
+                    }
+                }); 
+     });
+     
+    $('.datefilter').daterangepicker({
+       locale: {
+            format: 'YYYY-MM-DD hh:mm:ss'
+        },
+        startDate: getMaxDate(new Date(), true),
+        endDate: getMaxDate(new Date(), true),
+        minDate: getMinDate(new Date(), true),
+        maxDate: getMaxDate(new Date(), true),
+        timePicker: true,
+        timePicker24Hour: true
+    }, 
+    function(start, end, label) {
+      setTimePeriod(start,"startDate");
+      setTimePeriod(end,"endDate");
+      var startDate = jQuery('.datefilter').data('startDate');
+      var endDate = jQuery('.datefilter').data('endDate')
+        $.ajax({
+                    url: '/devices/get_data',
+                    type: "GET",
+                    dataType: "json",
+                    data: { "start_date": startDate, 
+                            "end_date": endDate ,
+                            "device_id": device.id
+                          },
+                   
+                    success: function (outcome){
+                       console.log(outcome);
+                       loadData(outcome);
+
+                    },
+                    
+                    error: function(data){
+                    }
+                }); 
+    });
+
+    
+  function loadData(outcome){
+     var data_x = [], data_y =[];
+                        console.log(outcome.messages.length);
+                        if(outcome.messages.length > 0 ){
+                            for (var i = 0; i < outcome.messages.length ; i += 1) {
+                                console.log(outcome.messages[i]['date']);
+                                data_x.push(new Date(outcome.messages[i]['date']));
+                                data_y.push(outcome.messages[i]['temp']);
+                            }
+                            data_x.unshift('x');
+                            data_y.unshift("temp");
+                            console.log(data_x);
+                            chart.load({
+                                columns: [ data_x, data_y ],
+                                unload: ['temp','x']
+                            });
+                         }   
+  }
+  function setTimePeriod(time_object,date_type){
+      var hour = getHour(time_object);
+      var appendZero = hour<10 ? "0" : ""
+      var time_string = time_object.format('YYYY-MM-DD')+" "+appendZero+hour+":"+time_object.format('mm');
+      jQuery(".datefilter").data(date_type,time_string);
+  }
+
+  function getMinDate(date, time_factor){
+    var day = date.getDate();
+    var month = date.getMonth()+1;
+    var year = date.getFullYear();
+    year = year-2;
+    var date_with_zero = year+"-"+(month<10 ? '0' :'')+month+"-"+(day<10 ? '0' :'')+day;
+    return time_factor ? date_with_zero+" 00:00:00" : date_with_zero;
+  }
+
+  function getMaxDate(date, time_factor){
+    var day = date.getDate();
+    var month = date.getMonth()+1;
+    var year = date.getFullYear();
+    var date_with_zero = year+"-"+(month<10 ? '0' :'')+month+"-"+(day<10 ? '0' :'')+day;
+    return time_factor ? date_with_zero+" 00:00:00" : date_with_zero;
+  }
+
+  function getHour(time_object){
+    var hour = parseInt(time_object.format('h'));
+    var hour_format = time_object.format('A');
+    if(hour_format=="PM"){
+       return hour = hour <12 ? (hour + 12) : hour ;
+    }
+    if(hour_format=="AM"){
+      return hour = hour==12 ? 00 : hour ;
+    }
+  }  
+
+
+}
+
+</script>
+<script>
+      function initMap() {
+        console.log("coming here!!");
+        var map = new google.maps.Map(document.getElementById('map'), {
+          zoom: 8,
+          center: {lat: 13.0827, lng: 80.2707}
+        });
+        var geocoder = new google.maps.Geocoder();
+
+      
+          geocodeAddress(geocoder, map);
+      
+      }
+
+      function geocodeAddress(geocoder, resultsMap) {
+        geocoder.geocode({'address': "Rajai, avenue Annexe, valasaravakkam,chennai -87"}, function(results, status) {
+          if (status === 'OK') {
+            resultsMap.setCenter(results[0].geometry.location);
+            var marker = new google.maps.Marker({
+              map: resultsMap,
+              position: results[0].geometry.location
+            });
+          } else {
+            alert('Geocode was not successful for the following reason: ' + status);
+          }
+        });
+      }
+</script>
+<script async defer
+    src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBAku0HEpFEy0B1EDoycg7PIvaB0XeS6h0&callback=initMap">
+</script>
