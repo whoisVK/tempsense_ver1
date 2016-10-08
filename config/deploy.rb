@@ -1,10 +1,10 @@
 # config valid only for current version of Capistrano
 lock '3.6.1'
 
-set :application, 'tempsense_v1'
-set :repo_url, 'git@github.com:whoisVK/tempsense_v1.git' # Edit this to match your repository
+set :application, 'tempsense_ver1'
+set :repo_url, 'git@github.com:whoisVK/tempsense_ver1.git' # Edit this to match your repository
 set :branch, :master
-set :deploy_to, '/home/deploy/tempsense_v1'
+set :deploy_to, '/home/deploy/tempsense_ver1'
 set :pty, true
 set :linked_files, %w{config/database.yml config/application.yml}
 set :linked_dirs, %w{bin log tmp/pids tmp/cache tmp/sockets vendor/bundle public/system public/uploads}
